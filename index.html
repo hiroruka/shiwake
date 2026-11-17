@@ -92,9 +92,10 @@ sc.onchange=function(){sw.length=1;var C=sc.value&&D[sp.value][sc.value];if(C&&C
 sw.onchange=function(){if(sw.value){$('a').value=sp.value+sc.value+sw.value;run();}};
 
 var VER='';
-function setData(o){D=o.D;Y=o.Y;Z=o.Z;VER=o.v||'';$('ver').textContent=VER;populate();$('setup').style.display='none';$('app').style.display='';qinit();}
+function setData(o){D=o.D;Y=o.Y;Z=o.Z;VER=o.v||'';$('ver').textContent=VER;populate();$('setup').style.display='none';$('app').style.display='';if(!window._qd){window._qd=1;qinit();}}
 function loadText(t,save){var o=JSON.parse(t);if(!o||!o.D||!o.Y||!o.Z)throw new Error('bad');setData(o);if(save){try{localStorage.setItem('shiwake_data',t);}catch(e){$('res').innerHTML='<div class="card warn">この端末に保存できませんでした。次回も読み込みが必要です。</div>';}}}
 $('file').onchange=function(){var f=this.files&&this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{loadText(r.result,true);}catch(e){var m=$('setupmsg');m.textContent='読み込めませんでした。コード表のファイル（shiwake_data.json）を選んでください。';m.style.display='';}};r.readAsText(f);};
 $('swap').onclick=function(e){e.preventDefault();$('setup').style.display='';};
-(function(){var s=null;try{s=localStorage.getItem('shiwake_data');}catch(e){}if(s){try{loadText(s,false);return;}catch(e){}}$('setup').style.display='';})();
+(function(){var s=null;try{s=localStorage.getItem('shiwake_data');}catch(e){}if(s){try{loadText(s,false);}catch(e){s=null;}}
+fetch('shiwake_data.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw 0;return r.text();}).then(function(t){if(t===s)return;loadText(t,true);}).catch(function(){if(!s)$('setup').style.display='';});})();
 </script></main></body></html>
